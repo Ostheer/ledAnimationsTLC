@@ -4,9 +4,9 @@
 #define FOTOLIJST_MAIN_H
 
 //shift register
-#define SLEPIN D6
-#define SCLKPIN D7
-#define SSDIPIN D8
+#define SLEPIN 7
+#define SCLKPIN 8
+#define SSDIPIN 9
 
 //leds
 #define NUM_LEDS 26
@@ -17,6 +17,7 @@ extern const int bambits;
 extern const int maxbr;
 
 //animations
+extern bool animationSwitched;
 struct ledImpulseNode {
     int lednum;
     int period;

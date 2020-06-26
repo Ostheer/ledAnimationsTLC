@@ -9,11 +9,6 @@
 /* Shift registers */
 TLC591x shiftreg(NUM_SHIFT_REGS, SSDIPIN, SCLKPIN, SLEPIN);
 
-/* WiFi connection */
-//const char* ssid = WIFI_SSID;
-//const char* password = WIFI_PASSWORD;
-//WiFiClient client;
-
 /* Declare functions */
 void writeLeds();
 void switchAnimations();
@@ -30,31 +25,26 @@ const int maxbr = (1<<bambits)-1;
 
 /* System callbacks */
 Ticker updateLeds(writeLeds, 100, 0, MICROS_MICROS);
-Ticker animationSwitcher(switchAnimations,ANIMATION_SWITCH_DELAY*1000);
+Ticker animationSwitcher(switchAnimations,ANIMATION_SWITCH_DELAY);
 
 /* Animations */
-Ticker animations[] = {Ticker(runaround, 30), 
+Ticker animations[] = {Ticker(pulserun, 50), 
                        Ticker(randomleds, 30), 
                        Ticker(voogtled, 30), 
-                       Ticker(pulserun, 30),
-                       Ticker(pulserun, 10)};
-const int numAnimations = 5;
+                       Ticker(runaround, 20),
+                       /*Ticker(pulserun, 30),*/
+                       Ticker(fadeall, 30)};
+const int numAnimations = 6;
 int currentAnimation = 0;
+bool animationSwitched = true;
 
 void setup() {
-  /* Make WiFi connection */
-  //WiFi.disconnect();
-  //WiFi.hostname("DISCOLIJST");
-  //WiFi.begin(ssid, password);
-  //WiFi.mode(WIFI_STA);
-  //while (WiFi.status() != WL_CONNECTED) delay(100);
-
   /* Enable screen update routine */
   updateLeds.start();
   animationSwitcher.start();
+  animations[currentAnimation].start();
 
-  // initialise random number generator
-  srand (time(NULL));
+  randomSeed(analogRead(A0));
 }
 
 void loop() {
@@ -112,8 +102,15 @@ connected to MCU                          leds[0]
 */
 
 void switchAnimations(){
-  animations[currentAnimation].stop();
-  for (int j = 0; j < N; j++) leds[j] = 0;
-  currentAnimation = rand()%numAnimations;
-  animations[currentAnimation].start();
+  static int clkdivide = 0;
+  clkdivide++;
+
+  if (clkdivide == ANIMATION_SWITCH_DIVIDE){
+    animations[currentAnimation].stop();
+    for (int j = 0; j < N; j++) leds[j] = 0;
+    currentAnimation = random(numAnimations);
+    animationSwitched = true;
+    animations[currentAnimation].start();
+    clkdivide = 0;
+  }
 }
