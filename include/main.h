@@ -17,7 +17,8 @@ extern const int bambits;
 extern const int maxbr;
 
 //animations
-extern bool animationSwitched;
+extern bool firstRun;
+extern bool lastRun;
 struct ledImpulseNode {
     int lednum;
     int period;

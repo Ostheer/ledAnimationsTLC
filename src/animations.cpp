@@ -17,8 +17,8 @@ void voogtled(){
 }
 
 void fadeall(){
+  const int imax = 50;
   static int i = 0;
-  static int imax = 50;
   
   float arg = 6.3*i/imax;
   int val0 = maxbr*pow(sin(arg),2);
@@ -29,14 +29,16 @@ void fadeall(){
 }
 
 void runaround(){
-  static bool direction = true;
-  if (animationSwitched){
-    animationSwitched = false;
-    direction = random(2);
-  }
+  const int imax = 25;
   static int i = 0;
-  static int imax = 25;
   static int iled0 = 0;
+  static bool direction = true;
+  if (firstRun){
+    firstRun = false;
+    direction = random(2);
+    i = 0;
+    iled0 = 0;
+  }
 
   leds[iled0] = maxbr*pow(sin(3.14*i/imax),2);
 
@@ -58,11 +60,11 @@ void pulserun(){
   static bool direction = true;
   int temp;
 
-  if (animationSwitched){
+  if (firstRun){
     for (int j = 0; j < 7; j++){
       leds[j] = maxbr*pow(sin(3.14*j/7),2);
     }
-    animationSwitched = false;
+    firstRun = false;
     direction = random(2);
   }
 
@@ -75,7 +77,7 @@ void pulserun(){
   }
   else{
     temp = leds[0];
-    for (int j = 0; j < N; j++){
+    for (int j = 0; j < N-1; j++){
       leds[j] = leds[j+1];
     }
     leds[N-1] = temp;
@@ -156,5 +158,14 @@ void randomleds() {
     temp->lednum = random(N);
     temp->phase = 0;
     temp->period = 50;
+  }
+
+  /* Free memory */
+  if (lastRun){
+    while (current != nullptr){
+      temp = current->next;
+      delete current;
+      current = temp;
+    }
   }
 }

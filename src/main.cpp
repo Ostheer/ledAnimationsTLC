@@ -1,5 +1,4 @@
 #include <Arduino.h>
-//#include <ESP8266WebServer.h>
 #include <Ticker.h>
 #include "shiftreg.h"
 #include "settings.h"
@@ -29,14 +28,15 @@ Ticker animationSwitcher(switchAnimations,ANIMATION_SWITCH_DELAY);
 
 /* Animations */
 Ticker animations[] = {Ticker(pulserun, 50), 
-                       Ticker(randomleds, 30), 
+                       Ticker(randomleds, 30),
                        Ticker(voogtled, 30), 
                        Ticker(runaround, 20),
-                       /*Ticker(pulserun, 30),*/
+                       Ticker(pulserun, 30),
                        Ticker(fadeall, 30)};
 const int numAnimations = 6;
 int currentAnimation = 0;
-bool animationSwitched = true;
+bool firstRun = true;
+bool lastRun = false;
 
 void setup() {
   /* Enable screen update routine */
@@ -106,10 +106,13 @@ void switchAnimations(){
   clkdivide++;
 
   if (clkdivide == ANIMATION_SWITCH_DIVIDE){
+    lastRun = true;
+    animations[currentAnimation].update();
     animations[currentAnimation].stop();
     for (int j = 0; j < N; j++) leds[j] = 0;
     currentAnimation = random(numAnimations);
-    animationSwitched = true;
+    firstRun = true;
+    lastRun = false;
     animations[currentAnimation].start();
     clkdivide = 0;
   }
