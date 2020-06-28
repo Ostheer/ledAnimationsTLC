@@ -70,7 +70,7 @@ void pulserun(){
 
   if (direction){
     temp = leds[N-1];
-    for (int j = N-1; j >= 0; j--){
+    for (int j = N-1; j >= 1; j--){
       leds[j] = leds[j-1];
     }
     leds[0] = temp;
@@ -84,6 +84,39 @@ void pulserun(){
   }
 }
 
+void bounce(){
+  static bool horizontal = true;
+  static bool direction = true;
+  static int imax = NUM_COLS-1;
+  static int jmax = NUM_ROWS-1;
+  static int i = 0;
+
+  if (firstRun){
+    firstRun = false;
+    horizontal = random(2);
+    if (horizontal) {
+      imax = NUM_COLS-1; 
+      jmax = NUM_ROWS-1;
+    }
+    else {
+      imax = NUM_ROWS-1; 
+      jmax = NUM_COLS-1;
+    }
+  }
+
+  for (int j = 0; j < N; j++) leds[j] = 0;
+
+  for (int j = 0; j <= jmax; j++){
+    if (horizontal) 
+      leds[ledgrid[j][i]] = maxbr;
+    else 
+      leds[ledgrid[i][j]] = maxbr;
+  }
+
+  if (direction) i++; else i--;
+  if (i == imax || i == 0) direction = !direction;
+}
+
 void randomleds() {
   //pulse creation rate. lower is more
   static int creationDivisor = 12;
@@ -95,9 +128,7 @@ void randomleds() {
   //[round(np.e**(-x**2/2),3) for x in np.linspace(-3,3,31)]
 
   /* clear buffer */
-  for (int j = 0; j < N; j++){
-    leds[j] = 0;
-  }
+  for (int j = 0; j < N; j++) leds[j] = 0;
 
   //set up variables
   static ledImpulseNode* head = nullptr;

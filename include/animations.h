@@ -6,5 +6,6 @@ void fadeall();
 void runaround();
 void pulserun();
 void randomleds();
+void bounce();
 
 #endif

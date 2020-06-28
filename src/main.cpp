@@ -18,6 +18,15 @@ const int ledmap[NUM_LEDS] = { 7,  6,  4,  5,  2,  3,  1,  0,
                               15, 14, 12, 13, 10, 11,  9,  8,
                               23, 22, 20, 21, 18, 19, 17, 16,
                               25, 24};
+const int ledgrid[NUM_ROWS][NUM_COLS] = {{ 10,  11,  12,  13,  14,  15},
+                                         {  9, EOF, EOF, EOF, EOF,  16},
+                                         {  8, EOF, EOF, EOF, EOF,  17},
+                                         {  7, EOF, EOF, EOF, EOF,  18},
+                                         {  6, EOF, EOF, EOF, EOF,  19},
+                                         {  5, EOF, EOF, EOF, EOF,  20}, 
+                                         {  4, EOF, EOF, EOF, EOF,  21}, 
+                                         {  3, EOF, EOF, EOF, EOF,  22},
+                                         {  2,   1,   0,  25,  24,  23}};
 const int N = NUM_LEDS;
 const int bambits = BAM_RESOLUTION;
 const int maxbr = (1<<bambits)-1;
@@ -27,11 +36,11 @@ Ticker updateLeds(writeLeds, 100, 0, MICROS_MICROS);
 Ticker animationSwitcher(switchAnimations,ANIMATION_SWITCH_DELAY);
 
 /* Animations */
-Ticker animations[] = {Ticker(pulserun, 50), 
+Ticker animations[] = {Ticker(bounce,100),
+                       Ticker(pulserun, 50), 
                        Ticker(randomleds, 30),
                        Ticker(voogtled, 30), 
                        Ticker(runaround, 20),
-                       Ticker(pulserun, 30),
                        Ticker(fadeall, 30)};
 const int numAnimations = 6;
 int currentAnimation = 0;

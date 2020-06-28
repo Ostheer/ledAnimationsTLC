@@ -10,9 +10,12 @@
 
 //leds
 #define NUM_LEDS 26
+#define NUM_ROWS 9
+#define NUM_COLS 6
 #define NUM_SHIFT_REGS 4
 extern const int N;
-extern char leds[];
+extern char leds[NUM_LEDS];
+extern const int ledgrid[NUM_ROWS][NUM_COLS];
 extern const int bambits;
 extern const int maxbr;
 
