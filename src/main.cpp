@@ -32,17 +32,17 @@ const int bambits = BAM_RESOLUTION;
 const int maxbr = (1<<bambits)-1;
 
 /* System callbacks */
-Ticker updateLeds(writeLeds, 100, 0, MICROS_MICROS);
-Ticker animationSwitcher(switchAnimations,ANIMATION_SWITCH_DELAY);
+Ticker updateLeds(writeLeds, 400, 0, MICROS_MICROS);
+Ticker animationSwitcher(switchAnimations, ANIMATION_SWITCH_DELAY);
 
 /* Animations */
-Ticker animations[] = {Ticker(bounce,100),
-                       Ticker(pulserun, 50), 
-                       Ticker(randomleds, 30),
-                       Ticker(voogtled, 30), 
-                       Ticker(runaround, 20),
-                       Ticker(fadeall, 30)};
 const int numAnimations = 6;
+Ticker animations[numAnimations] = {Ticker(fadeall, 30),
+                                    Ticker(pulserun, 50), 
+                                    Ticker(randomleds, 30),
+                                    Ticker(voogtled, 30), 
+                                    Ticker(runaround, 20),
+                                    Ticker(bounce, 100)};
 int currentAnimation = 0;
 bool firstRun = true;
 bool lastRun = false;
@@ -51,7 +51,8 @@ void setup() {
   /* Enable screen update routine */
   updateLeds.start();
   animationSwitcher.start();
-  animations[currentAnimation].start();
+  for (int i = 0; i < numAnimations; i++)
+    animations[i].start();
 
   randomSeed(analogRead(A0));
 }
@@ -117,12 +118,10 @@ void switchAnimations(){
   if (clkdivide == ANIMATION_SWITCH_DIVIDE){
     lastRun = true;
     animations[currentAnimation].update();
-    animations[currentAnimation].stop();
     for (int j = 0; j < N; j++) leds[j] = 0;
     currentAnimation = random(numAnimations);
     firstRun = true;
     lastRun = false;
-    animations[currentAnimation].start();
     clkdivide = 0;
   }
 }

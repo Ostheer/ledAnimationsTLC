@@ -90,6 +90,7 @@ void bounce(){
   static int imax = NUM_COLS-1;
   static int jmax = NUM_ROWS-1;
   static int i = 0;
+  int led;
 
   if (firstRun){
     firstRun = false;
@@ -108,9 +109,12 @@ void bounce(){
 
   for (int j = 0; j <= jmax; j++){
     if (horizontal) 
-      leds[ledgrid[j][i]] = maxbr;
+      led = ledgrid[j][i];
     else 
-      leds[ledgrid[i][j]] = maxbr;
+      led = ledgrid[i][j]; 
+    
+    if (led != EOF)
+      leds[led] = maxbr;
   }
 
   if (direction) i++; else i--;
@@ -193,6 +197,7 @@ void randomleds() {
 
   /* Free memory */
   if (lastRun){
+    current = head;
     while (current != nullptr){
       temp = current->next;
       delete current;

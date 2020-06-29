@@ -8,4 +8,14 @@ void pulserun();
 void randomleds();
 void bounce();
 
+struct ledImpulseNode {
+    int lednum;
+    int period;
+    int phase;
+    int amplitude;
+
+    ledImpulseNode* next;
+    ledImpulseNode* prev;
+};
+
 #endif
