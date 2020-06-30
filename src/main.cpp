@@ -1,9 +1,9 @@
 #include <Arduino.h>
-#include <TaskScheduler.h>
 #include "shiftreg.h"
 #include "settings.h"
 #include "main.h"
 #include "animations.h"
+#include <TaskScheduler.h>
 
 /* Shift registers */
 TLC591x shiftreg(NUM_SHIFT_REGS, SSDIPIN, SCLKPIN, SLEPIN);
@@ -39,11 +39,11 @@ Task animswitcher(ANIMATION_SWITCH_DELAY, TASK_FOREVER, &switchAnimations);
 /* Animations */
 const int numAnimations = 6;
 Task t1( 30000, TASK_FOREVER, &fadeall);
-Task t2( 50000, TASK_FOREVER, &pulserun);
+Task t2( 60000, TASK_FOREVER, &pulserun);
 Task t3( 30000, TASK_FOREVER, &randomleds);
 Task t4( 30000, TASK_FOREVER, &voogtled);
 Task t5( 20000, TASK_FOREVER, &runaround);
-Task t6(100000, TASK_FOREVER, &bounce);
+Task t6(120000, TASK_FOREVER, &bounce);
 Task* animations[numAnimations] = {&t1, &t2, &t3, &t4, &t5, &t6};
 int currentAnimation = 0;
 bool firstRun = true;
