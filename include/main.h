@@ -1,6 +1,8 @@
 #ifndef FOTOLIJST_MAIN_H
 #define FOTOLIJST_MAIN_H
 
+#define _TASK_MICRO_RES
+
 //shift register
 #define SLEPIN 12
 #define SCLKPIN 11

@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <Ticker.h>
+#include <TaskScheduler.h>
 #include "shiftreg.h"
 #include "settings.h"
 #include "main.h"
@@ -32,36 +32,39 @@ const int bambits = BAM_RESOLUTION;
 const int maxbr = (1<<bambits)-1;
 
 /* System callbacks */
-Ticker updateLeds(writeLeds, 400, 0, MICROS_MICROS);
-Ticker animationSwitcher(switchAnimations, ANIMATION_SWITCH_DELAY);
+Scheduler runner;
+Task ledupdater(400, TASK_FOREVER, &writeLeds);
+Task animswitcher(ANIMATION_SWITCH_DELAY, TASK_FOREVER, &switchAnimations);
 
 /* Animations */
 const int numAnimations = 6;
-Ticker animations[numAnimations] = {Ticker(fadeall, 30),
-                                    Ticker(pulserun, 50), 
-                                    Ticker(randomleds, 30),
-                                    Ticker(voogtled, 30), 
-                                    Ticker(runaround, 20),
-                                    Ticker(bounce, 100)};
+Task t1( 30000, TASK_FOREVER, &fadeall);
+Task t2( 50000, TASK_FOREVER, &pulserun);
+Task t3( 30000, TASK_FOREVER, &randomleds);
+Task t4( 30000, TASK_FOREVER, &voogtled);
+Task t5( 20000, TASK_FOREVER, &runaround);
+Task t6(100000, TASK_FOREVER, &bounce);
+Task* animations[numAnimations] = {&t1, &t2, &t3, &t4, &t5, &t6};
 int currentAnimation = 0;
 bool firstRun = true;
 bool lastRun = false;
 
 void setup() {
   /* Enable screen update routine */
-  updateLeds.start();
-  animationSwitcher.start();
-  for (int i = 0; i < numAnimations; i++)
-    animations[i].start();
+  runner.init();
+  runner.addTask(ledupdater);
+  runner.addTask(animswitcher);
+  for (int i = 0; i < numAnimations; i++) 
+    runner.addTask(*animations[i]);
+
+  ledupdater.enable();
+  animswitcher.enable();
+  animations[0]->enable();
 
   randomSeed(analogRead(A0));
 }
 
-void loop() {
-  updateLeds.update();
-  animationSwitcher.update();
-  animations[currentAnimation].update();
-}
+void loop() { runner.execute(); }
 
 void writeLeds() {
   static int i = 0;
@@ -117,9 +120,11 @@ void switchAnimations(){
 
   if (clkdivide == ANIMATION_SWITCH_DIVIDE){
     lastRun = true;
-    animations[currentAnimation].update();
+    animations[currentAnimation]->forceNextIteration();
+    animations[currentAnimation]->disable();
     for (int j = 0; j < N; j++) leds[j] = 0;
     currentAnimation = random(numAnimations);
+    animations[currentAnimation]->enable();
     firstRun = true;
     lastRun = false;
     clkdivide = 0;
